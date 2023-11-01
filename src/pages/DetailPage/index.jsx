@@ -13,10 +13,12 @@ import {
 import Type from '../../components/Type'
 import BaseStat from '../../components/BaseStat'
 import DamageRelations from '../../components/DamageRelations'
+import DamageModal from '../../components/DamageModal'
 const DetailPage = () => {
 	const params = useParams()
 	const [pokemon, setPokemon] = useState()
 	const [isLoading, setIsLoading] = useState(true)
+	const [isModalOpen, setIsModalOpen] = useState(false)
 
 	const baseUrl = `https://pokeapi.co/api/v2/pokemon/`
 
@@ -155,6 +157,9 @@ const DetailPage = () => {
 								loading="lazy"
 								alt={pokemon.name}
 								className={`object-contain h-full`}
+								onClick={() => {
+									setIsModalOpen(true)
+								}}
 							/>
 						</div>
 					</section>
@@ -216,18 +221,14 @@ const DetailPage = () => {
 								</tbody>
 							</table>
 						</div>
-						{pokemon.DamageRelations && (
-							<div className="w-10/12">
-								<h2
-									className={`text-base text-center font-semibold ${text}`}>
-									<DamageRelations
-										damages={pokemon.DamageRelations}
-									/>
-								</h2>
-							</div>
-						)}
 					</section>
 				</div>
+				{isModalOpen && (
+					<DamageModal
+						damages={pokemon.DamageRelations}
+						setIsModalOpen={setIsModalOpen}
+					/>
+				)}
 			</article>
 		</>
 	)

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import Type from './Type'
 
 const DamageRelations = ({ damages }) => {
 	const [damageForm, setDamageForm] = useState({})
@@ -107,7 +108,50 @@ const DamageRelations = ({ damages }) => {
 			setDamageForm(postDamageValue(arrayDamage[0].from))
 		}
 	}, [damages])
-	return <div></div>
+	return (
+		<div className="flex gap-2 flex-col">
+			{damageForm ? (
+				<>
+					{Object.entries(damageForm).map(([keyName, value]) => {
+						const key = keyName
+						const valueOfKeyName = {
+							double_damage: 'Weak',
+							half_damage: 'Resistant',
+							no_damage: 'Immune',
+						}
+						return (
+							<div key={key}>
+								<h3 className="capitalize font-medium text-sm md:text-base text-slate-500 text-center">
+									{valueOfKeyName[key]}
+								</h3>
+								<div className="flex flex-wrap gap-1 justify-center">
+									{value.length > 0 ? (
+										value.map(
+											({ damageValue, name, url }) => {
+												return (
+													<Type
+														type={name}
+														key={url}
+														damegeValue={
+															damageValue
+														}
+													/>
+												)
+											},
+										)
+									) : (
+										<Type type={'none'} key={'none'} />
+									)}
+								</div>
+							</div>
+						)
+					})}
+				</>
+			) : (
+				<></>
+			)}
+		</div>
+	)
 }
 
 export default DamageRelations
