@@ -1,12 +1,48 @@
 import React, { useEffect, useState } from 'react'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
+import {
+	getAuth,
+	signInWithPopup,
+	GoogleAuthProvider,
+	onAuthStateChanged,
+} from 'firebase/auth'
+import app from '../firebase'
+
 const NavBar = () => {
-	const [top, setTop] = useState(false)
+	const navigate = useNavigate()
+	const { pathname } = useLocation()
+	const auth = getAuth(app)
+	const provider = new GoogleAuthProvider()
+	useEffect(() => {
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
+			if (!user) {
+				navigate('/login')
+			} else if (user && pathname === '/login') {
+				navigate('/')
+			}
+			console.log(user)
+		})
+		return () => {
+			unsubscribe()
+		}
+	}, [pathname])
+	const handleAuth = () => {
+		signInWithPopup(auth, provider)
+			.then((result) => {
+				console.log(result)
+			})
+			.catch((error) => {
+				console.error(error)
+			})
+	}
+
+	const [show, setShow] = useState(false)
 	const listener = () => {
 		if (window.scrollY > 50) {
-			setTop(true)
+			setShow(true)
 		} else {
-			setTop(false)
+			setShow(false)
 		}
 	}
 	useEffect(() => {
@@ -16,7 +52,7 @@ const NavBar = () => {
 		}
 	}, [])
 	return (
-		<NavWrapper top={top}>
+		<NavWrapper $show={show}>
 			<Logo>
 				<Image
 					alt="poke logo"
@@ -24,9 +60,27 @@ const NavBar = () => {
 					onClick={() => (window.location.href = '/')}
 				/>
 			</Logo>
+			{pathname === '/login' ? (
+				<Login onClick={handleAuth}>Login</Login>
+			) : null}
 		</NavWrapper>
 	)
 }
+
+const Login = styled.a`
+	background-color: rgba(0, 0, 0, 0.6);
+	padding: 8px 16px;
+	text-transform: uppercase;
+	letter-spacing: 1.55px;
+	border: 1px solid #f9f9f9;
+	border-radius: 4px;
+	transition: all 0.2s ease 0s;
+	&:hover {
+		background-color: #f9f9f9;
+		color: #000;
+		border-color: transparent;
+	}
+`
 
 const Image = styled.img`
 	cursor: pointer;
@@ -46,7 +100,7 @@ const NavWrapper = styled.nav`
 	height: 70px;
 	display: flex;
 	justify-content: space-between;
-	backdrop-filter: ${(props) => (props.top ? 'blur(50px)' : 'none')};
+	backdrop-filter: ${(props) => props.show && 'blur(10px)'};
 	align-items: center;
 	padding: 0 36px;
 	letter-spacing: 16px;

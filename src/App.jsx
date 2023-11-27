@@ -9,7 +9,6 @@ const Layout = () => {
 	return (
 		<>
 			<NavBar />
-			<h1>아가가가ㅏ가ㅓ만ㅇ러ㅣㅁ너알</h1>
 			<br />
 			<br />
 			<br />
